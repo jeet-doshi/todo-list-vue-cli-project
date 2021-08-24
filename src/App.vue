@@ -5,14 +5,21 @@
                 <h2 class="heading">To-Do App</h2>
                 <label style="font-weight: bold;">New To-Do</label>
                 <br>
-<!-- Input Box -->  <input type="text" placeholder="Please enter an activity" id="name"  class="input-box" v-model="todo" /> 
-                <h5 v-if="isError">*Please enter a value</h5>
-<!-- Button    -->  <input type="button" value="Add ToDo" id="btn-click" class="btn" @click="storeTodo"  />
-                <span id="error"></span>
+<!-- Input Box --> <input type="text" placeholder="Please enter an activity" id="name"  class="input-box" v-model="todo" /> 
+                  <h5 v-if="isError">*Please enter a value</h5>
+<!-- Input Box for num -->  <input type="text" placeholder="Please enter todo number according to priority" class="input-box" @keypress="validateNumber" v-model="priority" /> 
+                  <h5 v-if="isErrorNum">*Please enter a number</h5> 
+                
+<!-- Button    --> <input type="button" value="Add ToDo" id="btn-click" class="btn" @click="storeTodo"  />
+                <!-- <h5 v-if="isError">*Please enter a value</h5> -->
+                <!-- <span id="error"></span> -->
                 <h3>To-Do List</h3>
                 <hr size="1" width="100%" color="white">
 <!-- Display --><ul id="box">
                     <li v-for="(todo, index) in todos" :key="index">
+                        <div class="itemPriority" v-for="(priority, index) in priorities" :key="index">
+                            {{ priority.name }}
+                      </div>
                         {{ todo }}
 
                         <button @click="deleteTodo(index)" class="remove-btn">Remove</button>
@@ -39,20 +46,48 @@ export default {
         todo: '',
         todos: [],
         isError: false,
-        }
+        priority: "",
+        priorities: [],
+        isErrorNum: false
+      };
     },
 
     methods: {
+
+   validateNumber()
+        {
+         
+          let keyCode = event.keyCode;
+          if(keyCode < 48 || keyCode > 57)
+          {
+            event.preventDefault();
+            this.isErrorNum = true
+          }
+          else{
+            this.isErrorNum = false
+          }
+        },
+
         storeTodo() {
             if(this.todo!=""){
-                this.todos.push(this.todo)
-                this.todo =''
+                this.todos.push(this.todo);
+                this.todo = "";
+                this.priorities.push({name: this.priority});
+                this.priority = "";
                 this.isError= false
             } else {
-                this.isError= true
-            }
-           
+                this.isError= true 
+            }          
         },
+
+
+    // change:function(e){
+    //   const number = e.target.value
+    //   this.isNumberValid(number);
+    // },
+    // isNumberValid: function(inputNumber) {
+    //   this.isValid=   this.regex.test(inputNumber)
+    // },
 
         deleteTodo(index) {
             this.todos.splice(index, 1)
@@ -92,7 +127,7 @@ export default {
 .input-box {
   width: 95%;
   height: 30px;
-  margin-top: 10px;
+  margin-top: 5px;
   margin-bottom: 5px;
   border-radius: 10px;
   border: 1.7px solid white;
