@@ -2,7 +2,7 @@
     <body>
        <div class="block" id="app">   
             <div class="container">
-                <h2 class="heading">To-Do App</h2>
+                <h1 class="heading">To-Do App</h1>
                 <label style="font-weight: bold;">New To-Do</label>
                 <br>
 <!-- Input Box --> <input type="text" placeholder="Please enter an activity" id="name"  class="input-box" v-model="todo" /> 
@@ -11,26 +11,35 @@
                   <h5 v-if="isErrorNum">*Please enter a number</h5> 
                 
 <!-- Button    --> <input type="button" value="Add ToDo" id="btn-click" class="btn" @click="storeTodo"  />
-                <!-- <h5 v-if="isError">*Please enter a value</h5> -->
-                <!-- <span id="error"></span> -->
-                <h3>To-Do List</h3>
+<!-- Initial Display List -->
+                <h2 class="sub-heading">To-Do List</h2>
                 <hr size="1" width="100%" color="white">
-<!-- Display --><ul id="box">
+<!-- Display Div -->
+                <ul id="box">
                     <li v-for="(todo, index) in todos" :key="index">
-                        <div class="itemPriority" v-for="(priority, index) in priorities" :key="index">
-                            {{ priority.name }}
-                      </div>
-                        {{ todo }}
-
+                        <!-- {{ todo.seq }} -  -->
+                        {{ todo.seq }} -
+                        {{ todo.name }}
+                       
                         <button @click="deleteTodo(index)" class="remove-btn">Remove</button>
                     </li>
                 </ul>
+<!-- Removed List item -->
+              <h3 class="sub-heading" style="margin-top: 40px;">Completed List</h3>
+                <hr size="1" width="100%" color="white">
+<!-- Display Div --><ul id="box">
+                    <li v-for="(todo, index) in removedTodos" :key="index" >
+                       <div class="strikeout">
+                          {{ todo.seq }} -
+                          {{ todo.name }}
+                       </div> 
+                        <button class="remove-btn delete-btn" @click="clearTodo(index) ">Delete</button>
+                    </li>
+                </ul>
+                
             </div>
         </div>
 
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>  -->
-        <!-- <script src="Vue JS/vue.js"></script>
-        <script src="script.js"></script> -->
 
     </body>
 </template>
@@ -48,7 +57,9 @@ export default {
         isError: false,
         priority: "",
         priorities: [],
-        isErrorNum: false
+        isErrorNum: false,
+        removeTodo: "",
+        removedTodos: [],
       };
     },
 
@@ -70,9 +81,15 @@ export default {
 
         storeTodo() {
             if(this.todo!=""){
-                this.todos.push(this.todo);
+                this.todos.push({
+                  name: this.todo,
+                  seq: Number(this.priority),
+                  isStrikedOff: false
+                });
+            // sort the this.todos array
+              this.todos.sort( (a, b) => { return a.seq - b.seq })
+            // sort array complete
                 this.todo = "";
-                this.priorities.push({name: this.priority});
                 this.priority = "";
                 this.isError= false
             } else {
@@ -80,21 +97,18 @@ export default {
             }          
         },
 
-
-    // change:function(e){
-    //   const number = e.target.value
-    //   this.isNumberValid(number);
-    // },
-    // isNumberValid: function(inputNumber) {
-    //   this.isValid=   this.regex.test(inputNumber)
-    // },
-
         deleteTodo(index) {
-            this.todos.splice(index, 1)
+          this.removedTodos.push(...this.todos.splice(index, 1));
+        },
+
+        clearTodo(index) {
+          this.removedTodos.splice(index, 1)
         }
 
-    }
-}
+   }
+
+  }  
+
 </script>
 
 <style>
@@ -202,6 +216,25 @@ li {
 h5 {
   margin-top: 0px;
   color: red;
+}
+
+.strikeout {
+  text-decoration: line-through;
+}
+
+.delete-btn {
+  background-color: white;
+  color: #d13db7;
+  font-weight: bolder;
+}
+
+.delete-btn:hover {
+  background-color: red;
+}
+
+.sub-heading {
+  margin-bottom: 0px;
+   color: #d13db7;
 }
 
 </style>
