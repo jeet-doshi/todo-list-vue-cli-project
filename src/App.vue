@@ -110,6 +110,7 @@ export default {
 
         undoTodo(index) {
           this.todos.push(...this.removedTodos.splice(index, 1));
+          this.todos.sort( (a, b) => { return a.seq - b.seq })
         }
 
    }
