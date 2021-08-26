@@ -25,7 +25,7 @@
                     </li>
                 </ul>
 <!-- Removed List item -->
-              <h3 class="sub-heading" style="margin-top: 40px;">Completed List</h3>
+              <h2 class="sub-heading" style="margin-top: 40px;">Completed List</h2>
                 <hr size="1" width="100%" color="white">
 <!-- Display Div --><ul id="box">
                     <li v-for="(todo, index) in removedTodos" :key="index" >
