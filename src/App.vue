@@ -33,7 +33,10 @@
                           {{ todo.seq }} -
                           {{ todo.name }}
                        </div> 
-                        <button class="remove-btn delete-btn" @click="clearTodo(index) ">Delete</button>
+                       <div style="display: flex;  ">
+                          <button class="remove-btn" @click="undoTodo(index)">Undo</button>
+                          <button class="remove-btn delete-btn" @click="clearTodo(index) ">Delete</button>
+                        </div>
                     </li>
                 </ul>
                 
@@ -103,6 +106,10 @@ export default {
 
         clearTodo(index) {
           this.removedTodos.splice(index, 1)
+        },
+
+        undoTodo(index) {
+          this.todos.push(...this.removedTodos.splice(index, 1));
         }
 
    }
@@ -223,13 +230,13 @@ h5 {
 }
 
 .delete-btn {
-  background-color: white;
-  color: #d13db7;
-  font-weight: bolder;
+  background-color: rgba(240, 12, 12, 0.7);
+  color: whitesmoke;
 }
 
 .delete-btn:hover {
-  background-color: red;
+  background-color: white;
+  color: black;
 }
 
 .sub-heading {
