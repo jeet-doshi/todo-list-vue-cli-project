@@ -1,122 +1,244 @@
 <template>
-    <body>
-       <div class="block" id="app">   
-            <div class="container">
-                <h1 class="heading">To-Do App</h1>
-                <label style="font-weight: bold;">New To-Do</label>
-                <br>
-<!-- Input Box --> <input type="text" placeholder="Please enter an activity" id="name"  class="input-box" v-model="todo" /> 
-                  <h5 v-if="isError">*Please enter a value</h5>
-<!-- Input Box for num -->  <input type="text" placeholder="Please enter todo number according to priority" class="input-box" @keypress="validateNumber" v-model="priority" /> 
-                  <h5 v-if="isErrorNum">*Please enter a number</h5> 
-                
-<!-- Button    --> <input type="button" value="Add ToDo" id="btn-click" class="btn" @click="storeTodo"  />
-<!-- Initial Display List -->
-                <h2 class="sub-heading">To-Do List</h2>
-                <hr size="1" width="100%" color="white">
-<!-- Display Div -->
-                <ul id="box">
-                    <li v-for="(todo, index) in todos" :key="index">
-                        <!-- {{ todo.seq }} -  -->
-                        {{ todo.seq }} -
-                        {{ todo.name }}
-                       
-                        <button @click="deleteTodo(index)" class="remove-btn">Remove</button>
-                    </li>
-                </ul>
-<!-- Removed List item -->
-              <h2 class="sub-heading" style="margin-top: 40px;">Completed List</h2>
-                <hr size="1" width="100%" color="white">
-<!-- Display Div --><ul id="box">
-                    <li v-for="(todo, index) in removedTodos" :key="index" >
-                       <div class="strikeout">
-                          {{ todo.seq }} -
-                          {{ todo.name }}
-                       </div> 
-                       <div style="display: flex;  ">
-                          <button class="remove-btn" @click="undoTodo(index)">Undo</button>
-                          <button class="remove-btn delete-btn" @click="clearTodo(index) ">Delete</button>
-                        </div>
-                    </li>
-                </ul>
-                
+  <body>
+    <div class="block" id="app">
+      <div class="container">
+        <h1 class="heading">To-Do App</h1>
+        <label style="font-weight: bold;">Add a To-Do</label>
+        <br>
+        <!-- Input Box for num -->
+        <input
+          type="text"
+          placeholder="Please enter priority of task"
+          class="input-box"
+          @keypress="validateNumber"
+          v-model="priority"
+        />
+        <h5 v-if="isErrorNum">*Please enter a number</h5>
+
+        <!-- Input Box -->
+        <input
+          type="text"
+          placeholder="Please enter an activity"
+          id="name"
+          class="input-box"
+          v-model="todo"
+        />
+        <h5 v-if="isError">*Please enter a value</h5>
+
+        <!-- Input Box for Description -->
+        <input
+          type="text"
+          placeholder="Please enter Description of task"
+          class="input-box"
+          v-model="desc_box"
+        />
+
+        <!-- Input Box for Category -->
+        <input
+          type="text"
+          placeholder="Please enter category of task"
+          class="input-box"
+          v-model="category_box"
+        />
+
+        <!-- Button  -->
+        <input
+          type="button"
+          value="Add ToDo"
+          id="btn-click"
+          class="btn"
+          @click="storeTodo"
+        />
+
+        <!-- Heading with drop-down -->
+        <div style="display: flex; justify-content: space-between;">
+            <div><h2 class="sub-heading">To-Do List</h2></div>
+            <div class="filter-box">
+              
+              <select class="form-control" v-model="selectedCategory" >
+              <!-- <option value="" disabled selected style="color: black;">Choose Category</option> -->
+              <option value="" selected enabled >All </option>
+              <option
+                v-for="(cat, index) in dropDown"
+                :key="index"
+                style="background-color: white; color: black; font-weight: bold;"
+              >
+                {{ cat }}
+              </option>
+            </select>
+          </div>  
+          <!-- <ul>
+            <li v-for="(todo, index) in computed_items" :key="index">
+              {{ todo.seq }} - {{ todo.name }}
+            </li>
+          </ul> -->
+        </div> 
+
+        <hr size="1" width="100%" color="white" />
+        <!-- Display List -->
+        <ul id="box">
+          <li v-for="(todo, index) in computed_items" :key="index">
+            <div>
+              {{ todo.seq }} -
+              {{ todo.name }}
+              <div class="desc_display">
+                {{ todo.desc }}
+              </div>
             </div>
-        </div>
+            <button @click="deleteTodo(index)" class="remove-btn">
+              Remove
+            </button>
+          </li>
+        </ul>
 
-
-    </body>
+        <!-- Removed List item -->
+        <h2 class="sub-heading" style="margin-top: 40px;">Completed List</h2>
+        <hr size="1" width="100%" color="white" />
+        <!-- Display Div -->
+        <ul id="box">
+          <li v-for="(todo, index) in removedTodos" :key="index">
+            <div class="strikeout">
+              {{ todo.seq }} -
+              {{ todo.name }}
+              <div class="desc_display">
+                {{ todo.desc }}
+              </div>
+            </div>
+            <div style="display: flex;  ">
+              <button class="remove-btn" @click="undoTodo(index)">Undo</button>
+              <button class="remove-btn delete-btn" @click="clearTodo(index)">Delete</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
 </template>
 
-<script>    
+<script>
 export default {
-  name: 'app',
+  name: "app",
 
-    // el: '#app',
+  // el: '#app',
 
-    data() {
-        return{
-        todo: '',
-        todos: [],
-        isError: false,
-        priority: "",
-        priorities: [],
-        isErrorNum: false,
-        removeTodo: "",
-        removedTodos: [],
-      };
+  data() {
+    return {
+      todo: "",
+      todos: [],
+      isError: false,
+      priority: "",
+      priorities: [],
+      isErrorNum: false,
+      removeTodo: "",
+      removedTodos: [],
+      desc_box: "",
+      category: "",
+      selectedCategory: ""
+    };
+  },
+
+  methods: {
+    validateNumber() {
+      let keyCode = event.keyCode;
+      if (keyCode < 48 || keyCode > 57) {
+        event.preventDefault();
+        this.isErrorNum = true;
+      } else {
+        this.isErrorNum = false;
+      }
     },
 
-    methods: {
+    storeTodo() {
+      if (this.todo != "") {
+        this.todos.push({
+          name: this.todo,
+          seq: Number(this.priority),
+          desc: this.desc_box,
+          cat: this.category_box,
+          isStrikedOff: false,
+        });
+        // sort the this.todos array
+        this.todos.sort((a, b) => {
+          return a.seq - b.seq;
+        });
+        // sort array complete
+        this.todo = "";
+        this.priority = "";
+        this.desc_box = "";
+        this.category_box = "";
+        this.isError = false;
+      } else {
+        this.isError = true;
+      }
+    },
 
-   validateNumber()
-        {
-         
-          let keyCode = event.keyCode;
-          if(keyCode < 48 || keyCode > 57)
-          {
-            event.preventDefault();
-            this.isErrorNum = true
-          }
-          else{
-            this.isErrorNum = false
-          }
-        },
+    deleteTodo(index) {
+      this.removedTodos.push(...this.todos.splice(index, 1));
+    },
 
-        storeTodo() {
-            if(this.todo!=""){
-                this.todos.push({
-                  name: this.todo,
-                  seq: Number(this.priority),
-                  isStrikedOff: false
-                });
-            // sort the this.todos array
-              this.todos.sort( (a, b) => { return a.seq - b.seq })
-            // sort array complete
-                this.todo = "";
-                this.priority = "";
-                this.isError= false
-            } else {
-                this.isError= true 
-            }          
-        },
+    clearTodo(index) {
+      this.removedTodos.splice(index, 1);
+    },
 
-        deleteTodo(index) {
-          this.removedTodos.push(...this.todos.splice(index, 1));
-        },
+    undoTodo(index) {
+      this.todos.push(...this.removedTodos.splice(index, 1));
+      this.todos.sort((a, b) => {
+        return a.seq - b.seq;
+      });
+    },
 
-        clearTodo(index) {
-          this.removedTodos.splice(index, 1)
-        },
+  },
 
-        undoTodo(index) {
-          this.todos.push(...this.removedTodos.splice(index, 1));
-          this.todos.sort( (a, b) => { return a.seq - b.seq })
+    computed: {
+    computed_items: function () {
+        if(this.selectedCategory!=="") {
+            let filtertype = this.todos.filter((a)=>{
+            if(a.cat === this.selectedCategory){
+             return a;
+          } 
+        }) 
+        return filtertype;
+        } else {
+          return this.todos;
         }
 
-   }
+      },
+      
+      dropDown() {
+        let arr= [];
+        this.todos.forEach((e) => {
+          arr.push(e.cat);
+        });
+        let unique = arr.filter((item, i, ar) => ar.indexOf(item) === i);
+          return unique;
+      }
+    },
 
-  }  
+  mounted() {
+    console.log("App mounted!");
+    if (localStorage.getItem("todos"))
+      this.todos = JSON.parse(localStorage.getItem("todos"));
+    if (localStorage.getItem("removedTodos"))
+      this.removedTodos = JSON.parse(localStorage.getItem("removedTodos"));
+  },
 
+  watch: {
+    todos: {
+      handler() {
+        console.log("Todos changed!");
+        localStorage.setItem("todos", JSON.stringify(this.todos));
+      },
+      deep: true,
+    },
+    removedTodos: {
+      handler() {
+        console.log("Todos changed!");
+        localStorage.setItem("removedTodos", JSON.stringify(this.removedTodos));
+      },
+      deep: true,
+    },
+  },
+};
 </script>
 
 <style>
@@ -202,6 +324,7 @@ ul {
   border: 1px solid white;
   color: white;
   font-size: 12px;
+  height: 20px;
 }
 
 .remove-btn:hover {
@@ -224,6 +347,7 @@ li {
 h5 {
   margin-top: 0px;
   color: red;
+  margin-bottom: 0px;
 }
 
 .strikeout {
@@ -242,7 +366,25 @@ h5 {
 
 .sub-heading {
   margin-bottom: 0px;
-   color: #d13db7;
+  color: #d13db7;
+  margin-right: 10px;
 }
 
+.desc_display {
+  color: rgb(192, 192, 192);
+  font-style: italic;
+  justify-content: left;
+  font-family: Garamond;
+}
+
+.filter-box {
+  margin-top: 22.5px;
+}
+
+.form-control {
+  background-color: #d13db7;
+  color: white;
+  width: 120px;
+  border-radius: 5px;
+}
 </style>
