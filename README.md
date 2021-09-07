@@ -1,8 +1,11 @@
 # todolist
 
-Link : https://todo-list-vue-cli-project.netlify.app
+## View App :
+https://todo-list-vue-cli-project.netlify.app
 
-![Image1](https://user-images.githubusercontent.com/87034860/129908731-90fda15b-0edf-4ac6-9c84-56afabb7dd28.PNG)
+## UI :
+![Todolist](https://user-images.githubusercontent.com/87034860/132366688-6c5dca4e-1e7f-4594-99a3-615fbd8c10ff.png)
+
 
 
 ## Project setup
